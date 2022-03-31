@@ -3,7 +3,7 @@ pragma solidity >= 0.7.0 < 0.9.0;
 
 contract LedgerBalance {
 
-    // 'msg.sender', 'msg.value', etc. are global variables.
+    // 'msg.sender', 'msg.value', 'block.timestamp', 'block.difficulty' etc. are global variables.
 
     // Create a map of wallets with amounts
     mapping(address => uint) balance;
