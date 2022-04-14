@@ -1,0 +1,162 @@
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity >= 0.7.0 < 0.9.0;
+/*
+Libraries are similar to Contracts but are mainly intended for reuse. 
+A Library contains functions which other contracts can call.
+Key characteristics of a Solidity Library:
+    A Library can not be destroyed as it is assumed to be stateless.
+    A Library cannot have state variables.
+    A Library cannot inherit any element.
+    A Library cannot be inherited.
+*/
+
+library Search {
+
+    // This loop runs through an array and returns the index of a number we are looking for if
+    // the number is actually in the array.
+    function Index(uint[] memory _index, uint value) public pure returns(uint) {
+        for(uint i=0; i<_index.length; i++) {
+            if(_index[i] == value) { return i; }
+        }
+    }
+} 
+
+// Let's use the 'Search' library directly.
+contract UseSearchLib {
+    uint[] info;    // An array variable of type uint.
+
+    constructor() {
+        info.push(2); info.push(4); info.push(6); info.push(8); info.push(10);
+    }
+
+    function CheckForValue(uint _val) public view returns(uint) {
+        uint value = Search.Index(info, _val);
+        return value;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+
+library Search_2 {
+
+    // This loop runs through an array and returns the index of a number we are looking for if
+    // the number is actually in the array.
+    function Index(uint[] memory _index, uint value) public pure returns(uint) {
+        for(uint i=0; i<_index.length; i++) {
+            if(_index[i] == value) { return i; }
+        }
+    }
+} 
+
+// Using A for B method to access the 'Search_2' library
+contract UseSearchLib_2 {
+
+    // Every datatype of uint array will now use (have direct access) to objects in the library
+    using Search_2 for uint[];
+
+    uint[] info;    // 'info' has direct access to objects in the library
+
+    constructor() {
+        info.push(2); info.push(4); info.push(6); info.push(8); info.push(10);
+    }
+
+    function CheckForValue() public view returns(uint) {
+
+        // 'info' has direct access to objects in the library because it is a uint array datatype
+        // 'info' has acces to the 'Index' function in 'Search_2' library.
+        // No need to pass two arguements to 'Index' function, only the 'value' argument is passed.
+        uint value = info.Index(4);
+        return value;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+
+library CalcLib {
+    function Add(uint a, uint b) public view returns(uint, address) {
+        
+        return (a + b, msg.sender);
+    }
+
+    function Subtract(uint a, uint b) public view returns(uint, address) {
+        require(a >= b, "The number being subtracted should not be greater");
+        return (a - b, msg.sender);
+    }
+
+    function Multiply(uint a, uint b) public view returns(uint, address) {
+        return (a * b, msg.sender);
+    }
+
+    function Divide(uint a, uint b) public view returns(uint, string memory, uint, address) {
+        require(a >= b, "The devisor has to be smaller than the dividend");
+        return (a / b, "Remaider:", a % b, msg.sender);
+    }
+}
+
+// Using A for B method to access the 'CalcLib' library.
+contract Calculator {
+
+    using CalcLib for uint;
+
+    function Addition(uint x, uint y) external view returns(uint, string memory, address) {
+        
+        // Declare two vaiables to receive integer and address being returned by the function.
+        (uint Answer, address _address) = x.Add(y);
+        return (Answer, "Addition Function called by: ", _address);
+    }
+
+    function Subtraction(uint x, uint y) external view returns(uint, string memory, address) {
+        
+        // Declare two vaiables to receive integer and address being returned by the function.
+        (uint Answer, address _address) = x.Subtract(y);
+        return (Answer, "Subtraction Function called by: ", _address);
+    }
+
+    function Multiply(uint x, uint y) external view returns(uint, string memory, address) {
+        
+        // Declare two vaiables to receive integer and address being returned by the function.
+        (uint Answer, address _address) = x.Multiply(y);
+        return (Answer, "Multiply Function called by: ", _address);
+    }
+
+    function Divide(uint x, uint y) external view returns(uint, string memory, uint, 
+    string memory, address) {
+        
+        // Declare four vaiables to receive integers, string and address being returned by the function.
+        (uint Answer, string memory Remainder, uint _remainder, address _address) = x.Divide(y);
+        return (Answer, Remainder, _remainder, "Division Function called by: ", _address);
+    }
+}
+
+// Using the 'CalcLib' library directly.
+contract Calculator_2 {
+
+    function Addition(uint x, uint y) external view returns(uint, string memory, address) {
+        
+        // Declare two vaiables to receive integer and address being returned by the function.
+        (uint Answer, address _address) = CalcLib.Add(x, y);
+        return (Answer, "Addition Function called by: ", _address);
+    }
+
+    function Subtraction(uint x, uint y) external view returns(uint, string memory, address) {
+        
+        // Declare two vaiables to receive integer and address being returned by the function.
+        (uint Answer, address _address) = CalcLib.Subtract(x, y);
+        return (Answer, "Subtraction Function called by: ", _address);
+    }
+
+    function Multiply(uint x, uint y) external view returns(uint, string memory, address) {
+        
+        // Declare two vaiables to receive integer and address being returned by the function.
+        (uint Answer, address _address) = CalcLib.Multiply(x, y);
+        return (Answer, "Subtraction Function called by: ", _address);
+    }
+
+    function Divide(uint x, uint y) external view returns(uint, string memory, uint, 
+    string memory, address) {
+        
+        // Declare four vaiables to receive integers, string and address being returned by the function.
+        (uint Answer, string memory Remainder, uint _remainder, address _address) = CalcLib.Divide(x, y);
+        return (Answer, Remainder, _remainder, "Division Function called by: ", _address);
+    }
+}
