@@ -27,7 +27,7 @@ contract ElCoin {
         // The maximum number of coins that can be minted (1 billion).
         require(Amount <= 1e27);
 
-        // Adds to whatever was the previous balance
+        // Adds to whatever was the previous balance.
         AvailBalance[Receiver] += Amount;   // OR: AvailBalance[Receiver] = AvailBalance[Receiver] + Amount
 
         Total_Supply += Amount;
